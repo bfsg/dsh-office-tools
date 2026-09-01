@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.1] - 2026-09-01
+
+### Fixed
+
+- `build.mjs` now invokes `tsc` through `node <typescript entry>` instead of `node_modules/.bin/tsc`, which is a shell script that Windows cannot spawn directly (`ENOENT`). `pnpm run build` / `pnpm run check` now succeed on Windows.
+
 ## [0.5.0] - 2026-08-31
 
 ### Added

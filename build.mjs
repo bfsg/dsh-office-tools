@@ -16,6 +16,7 @@
 import { build } from 'esbuild'
 import { mkdirSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
+import { createRequire } from 'node:module'
 mkdirSync('lib', { recursive: true })
 
 await build({
@@ -33,4 +34,9 @@ await build({
   logLevel: 'info',
 })
 
-execFileSync('node_modules/.bin/tsc', ['-p', 'tsconfig.json'], { stdio: 'inherit' })
+// Windows-safe tsc: pnpm's node_modules/.bin shims are shell scripts that
+// Windows cannot spawn directly (ENOENT). Run node against the compiler entry
+// instead; this works on every platform.
+const require = createRequire(import.meta.url)
+const tscEntry = require.resolve('typescript/bin/tsc')
+execFileSync(process.execPath, [tscEntry, '-p', 'tsconfig.json'], { stdio: 'inherit' })
